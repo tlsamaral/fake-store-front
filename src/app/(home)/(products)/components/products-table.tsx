@@ -67,16 +67,19 @@ export const columns: ColumnDef<Product>[] = [
 	{
 		id: 'search',
 		header: '',
-		cell: ({ row }) => (
-			<Dialog>
-				<DialogTrigger asChild>
-					<Button variant="ghost" size="icon">
-						<Search className="h-4 w-4" />
-					</Button>
-				</DialogTrigger>
-				<ProductDetails />
-			</Dialog>
-		),
+		cell: ({ row }) => {
+			const product = row.original
+			return (
+				<Dialog>
+					<DialogTrigger asChild>
+						<Button variant="ghost" size="icon">
+							<Search className="h-4 w-4" />
+						</Button>
+					</DialogTrigger>
+					<ProductDetails product={product} />
+				</Dialog>
+			)
+		},
 	},
 	{
 		accessorKey: 'id',
@@ -114,7 +117,7 @@ export const columns: ColumnDef<Product>[] = [
 			)
 		},
 		cell: ({ row }) => (
-			<span className="lowercase pl-4">{row.getValue('title')}</span>
+			<span className="lowercase  w-[120px]">{row.getValue('title')}</span>
 		),
 	},
 	{
@@ -131,7 +134,7 @@ export const columns: ColumnDef<Product>[] = [
 			)
 		},
 		cell: ({ row }) => (
-			<span className="lowercase pl-4">{row.getValue('category')}</span>
+			<span className=" w-[120px]">{row.getValue('category')}</span>
 		),
 	},
 	{
@@ -148,20 +151,23 @@ export const columns: ColumnDef<Product>[] = [
 			)
 		},
 		cell: ({ row }) => {
-			return <p className="font-medium pl-4">{row.getValue('price')}</p>
+			return <p className="font-medium text-center">{row.getValue('price')}</p>
 		},
 	},
 	{
-		id: 'Rating',
+		id: 'rating.rate',
+		accessorKey: 'rating.rate',
 		header: () => <div>Rating</div>,
 		cell: ({ row }) => {
 			const { rating } = row.original
 
 			return (
-				<div className="flex flex-col gap-2">
-					<div className="flex items-center justify-between">
-						<Star className="h-4 w-4 dark:text-yellow-200 text-yellow-500" />
-						<span className="font-medium text-xs">
+				<div className="flex flex-col gap-2 w-[120px]">
+					<div className="flex items-center">
+						{rating.rate > 4.5 && (
+							<Star className="h-4 w-4 dark:text-yellow-200 text-yellow-500" />
+						)}
+						<span className="font-medium text-xs ml-auto">
 							{rating.rate} / 5 - {rating.count}
 						</span>
 					</div>
@@ -239,6 +245,9 @@ export function ProductTable({ products: data }: DataTableProps) {
 			columnFilters,
 			columnVisibility,
 			rowSelection,
+		},
+		initialState: {
+			sorting: [{ id: 'rating.rate', desc: true }],
 		},
 	})
 
