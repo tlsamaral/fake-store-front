@@ -1,3 +1,4 @@
+import { fetchCategories } from '@/app/http/fetch-categories'
 import { Button } from '@/components/ui/button'
 import {
 	DialogContent,
@@ -16,8 +17,15 @@ import {
 	SelectValue,
 } from '@/components/ui/select'
 import { Textarea } from '@/components/ui/textarea'
+import { useQuery } from '@tanstack/react-query'
+import { AddProductSkeleton } from './add-product-skeleton'
 
 export function AddProduct() {
+	const { data: categories, isLoading: categoriesLoading } = useQuery({
+		queryKey: ['categories'],
+		queryFn: fetchCategories,
+	})
+
 	return (
 		<DialogContent className="sm:max-w-[525px]">
 			<DialogHeader>
@@ -26,33 +34,39 @@ export function AddProduct() {
 					On here you can create a new product.
 				</DialogDescription>
 			</DialogHeader>
-			<div className="grid gap-2 mt-2 py-4">
-				<div className="grid items-center gap-2 mt-2">
-					<Label htmlFor="title">Title</Label>
-					<Input id="title" />
+			{categoriesLoading ? (
+				<AddProductSkeleton />
+			) : (
+				<div className="grid gap-2 mt-2 py-4">
+					<div className="grid items-center gap-2 mt-2">
+						<Label htmlFor="title">Title</Label>
+						<Input id="title" placeholder="Product title" />
+					</div>
+					<div className="grid items-center gap-2 mt-2">
+						<Label htmlFor="price">Price</Label>
+						<Input id="price" placeholder="Product price" />
+					</div>
+					<div className="grid items-center gap-2 mt-2">
+						<Label htmlFor="category">Category</Label>
+						<Select>
+							<SelectTrigger id="category">
+								<SelectValue placeholder="Select a category" />
+							</SelectTrigger>
+							<SelectContent>
+								{categories?.map((category) => (
+									<SelectItem key={category} value={category}>
+										{category}
+									</SelectItem>
+								))}
+							</SelectContent>
+						</Select>
+					</div>
+					<div className="grid items-center gap-2 mt-2">
+						<Label htmlFor="description">Description</Label>
+						<Textarea id="description" placeholder="Write a description" />
+					</div>
 				</div>
-				<div className="grid items-center gap-2 mt-2">
-					<Label htmlFor="price">Price</Label>
-					<Input id="price" />
-				</div>
-				<div className="grid items-center gap-2 mt-2">
-					<Label htmlFor="category">Category</Label>
-					<Select>
-						<SelectTrigger id="category">
-							<SelectValue placeholder="Category" />
-						</SelectTrigger>
-						<SelectContent>
-							<SelectItem value="category-1">Category 1</SelectItem>
-							<SelectItem value="category-2">Category 2</SelectItem>
-							<SelectItem value="category-3">Category 3</SelectItem>
-						</SelectContent>
-					</Select>
-				</div>
-				<div className="grid items-center gap-2 mt-2">
-					<Label htmlFor="description">Description</Label>
-					<Textarea id="description" />
-				</div>
-			</div>
+			)}
 			<DialogFooter>
 				<Button type="submit">Create product</Button>
 			</DialogFooter>
