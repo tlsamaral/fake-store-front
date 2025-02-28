@@ -1,6 +1,7 @@
 import { Header } from '@/components/header'
 import { ThemeProvider } from '@/components/theme-provider'
 import { ReactQueryProvider } from '@/providers/react-query-provider'
+import { Toaster } from 'sonner'
 
 export default function RootLayout({
 	children,
@@ -13,6 +14,7 @@ export default function RootLayout({
 				enableSystem
 				disableTransitionOnChange
 			>
+				<Toaster richColors position="top-center" />
 				<Header />
 
 				<main className="max-w-7xl mx-auto mt-4">{children}</main>
