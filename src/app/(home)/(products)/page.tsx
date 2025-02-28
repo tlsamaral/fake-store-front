@@ -4,7 +4,7 @@ import { ProductTable } from './components/products-table'
 export interface Product {
 	id: number
 	title: string
-	price: string
+	price: number
 	category: string
 	description: string
 	image: string
@@ -24,7 +24,7 @@ export default async function Home() {
 	})
 
 	return (
-		<div className="flex flex-col gap-4">
+		<div className="flex flex-col gap-4 px-4 md:px-6 ">
 			<h1 className="text-3xl font-bold tracking-tight">Products</h1>
 
 			<div className="space-y-2.5">
