@@ -180,15 +180,16 @@ export const columns: ColumnDef<Product>[] = [
 		id: 'edit',
 		header: () => <div>Edit</div>,
 		cell: ({ row }) => {
+			const [editDialogOpen, setEditDialogOpen] = React.useState(false)
 			return (
-				<Dialog>
+				<Dialog open={editDialogOpen} onOpenChange={setEditDialogOpen}>
 					<DialogTrigger asChild>
 						<Button size="sm" variant="outline">
 							<Pencil className="size-4" />
 							Editar
 						</Button>
 					</DialogTrigger>
-					<EditProduct />
+					<EditProduct productId={row.original.id} open={editDialogOpen} />
 				</Dialog>
 			)
 		},
