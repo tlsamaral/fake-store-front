@@ -28,6 +28,8 @@ import * as React from 'react'
 
 import { Button } from '@/components/ui/button'
 
+import { deleteProduct } from '@/app/http/delete-product'
+import { fetchCategories } from '@/app/http/fetch-categories'
 import { AlertDialog, AlertDialogTrigger } from '@/components/ui/alert-dialog'
 import { Dialog, DialogTrigger } from '@/components/ui/dialog'
 import {
@@ -48,6 +50,7 @@ import {
 	SelectTrigger,
 	SelectValue,
 } from '@/components/ui/select'
+import { Skeleton } from '@/components/ui/skeleton'
 import {
 	Table,
 	TableBody,
@@ -56,7 +59,9 @@ import {
 	TableHeader,
 	TableRow,
 } from '@/components/ui/table'
+import { useMutation, useQuery } from '@tanstack/react-query'
 import Image from 'next/image'
+import { toast } from 'sonner'
 import type { Product } from '../page'
 import { AddProduct } from './add-product'
 import { DeleteProductConfirm } from './delete-product-confirm'
@@ -198,9 +203,26 @@ export const columns: ColumnDef<Product>[] = [
 		id: 'delete',
 		header: () => <div>Delete</div>,
 		cell: ({ row }) => {
+			const [deleteDialogOpen, setDeleteDialogOpen] = React.useState(false)
 			const product = row.original
+
+			const { mutateAsync: deleteProductFn, isPending } = useMutation({
+				mutationKey: ['delete-product'],
+				mutationFn: deleteProduct,
+			})
+
+			async function handleDelete() {
+				try {
+					await deleteProductFn({ productId: product.id })
+					setDeleteDialogOpen(false)
+					toast.success('Product deleted!')
+				} catch {
+					toast.error('Something went wrong!')
+				}
+			}
+
 			return (
-				<AlertDialog>
+				<AlertDialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
 					<AlertDialogTrigger asChild>
 						<Button size="sm" variant="destructive">
 							<Trash className="size-4" />
@@ -210,6 +232,7 @@ export const columns: ColumnDef<Product>[] = [
 					<DeleteProductConfirm
 						title="Você tem certeza?"
 						description={`Você quer excluir o produto ${product.title}, com id ${product.id}?`}
+						onConfirm={handleDelete}
 					/>
 				</AlertDialog>
 			)
@@ -229,6 +252,7 @@ export function ProductTable({ products: data }: DataTableProps) {
 	const [columnVisibility, setColumnVisibility] =
 		React.useState<VisibilityState>({})
 	const [rowSelection, setRowSelection] = React.useState({})
+	const [categoryFilter, setCategoryFilter] = React.useState('')
 
 	const table = useReactTable({
 		data,
@@ -246,11 +270,25 @@ export function ProductTable({ products: data }: DataTableProps) {
 			columnFilters,
 			columnVisibility,
 			rowSelection,
+			globalFilter: categoryFilter,
 		},
 		initialState: {
 			sorting: [{ id: 'rating.rate', desc: true }],
 		},
 	})
+
+	const { data: categories, isLoading: categoriesLoading } = useQuery({
+		queryKey: ['categories'],
+		queryFn: fetchCategories,
+	})
+
+	function filterByCategory(category: string) {
+		if (category === 'All') {
+			setCategoryFilter('')
+			return
+		}
+		setCategoryFilter(category)
+	}
 
 	return (
 		<div className="w-full">
@@ -264,14 +302,26 @@ export function ProductTable({ products: data }: DataTableProps) {
 					className="max-w-sm"
 				/>
 
-				<Select>
+				<Select
+					onValueChange={filterByCategory}
+					value={categoryFilter}
+					disabled={categoriesLoading}
+				>
 					<SelectTrigger className="w-[180px] ml-2">
-						<SelectValue placeholder="Category" />
+						<SelectValue placeholder="Select a category">
+							{categoriesLoading ? (
+								<Skeleton className="h-4 w-12" />
+							) : (
+								(categoryFilter ?? 'All')
+							)}
+						</SelectValue>
 					</SelectTrigger>
 					<SelectContent>
-						<SelectItem value="category-1">Category 1</SelectItem>
-						<SelectItem value="category-2">Category 2</SelectItem>
-						<SelectItem value="category-3">Category 3</SelectItem>
+						{categories?.map((category) => (
+							<SelectItem key={category} value={category}>
+								{category}
+							</SelectItem>
+						))}
 					</SelectContent>
 				</Select>
 
