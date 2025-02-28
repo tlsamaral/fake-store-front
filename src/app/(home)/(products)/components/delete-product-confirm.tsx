@@ -11,11 +11,13 @@ import {
 interface DeleteProductConfirmProps {
 	title: string
 	description: string
+	onConfirm: () => void
 }
 
 export function DeleteProductConfirm({
 	title,
 	description,
+	onConfirm,
 }: DeleteProductConfirmProps) {
 	return (
 		<AlertDialogContent>
@@ -24,8 +26,8 @@ export function DeleteProductConfirm({
 				<AlertDialogDescription>{description}</AlertDialogDescription>
 			</AlertDialogHeader>
 			<AlertDialogFooter>
-				<AlertDialogCancel>Cancelar</AlertDialogCancel>
-				<AlertDialogAction>Continuar</AlertDialogAction>
+				<AlertDialogCancel>Cancel</AlertDialogCancel>
+				<AlertDialogAction onClick={onConfirm}>Continue</AlertDialogAction>
 			</AlertDialogFooter>
 		</AlertDialogContent>
 	)
