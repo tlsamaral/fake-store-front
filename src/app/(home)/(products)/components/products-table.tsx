@@ -307,7 +307,10 @@ export function ProductTable({ products: data }: DataTableProps) {
 					value={categoryFilter}
 					disabled={categoriesLoading}
 				>
-					<SelectTrigger className="w-[180px] ml-2">
+					<SelectTrigger
+						className="w-[180px] ml-2"
+						data-testid="category-filter"
+					>
 						<SelectValue placeholder="Select a category">
 							{categoriesLoading ? (
 								<Skeleton className="h-4 w-12" />
@@ -396,16 +399,20 @@ export function ProductTable({ products: data }: DataTableProps) {
 						size="sm"
 						onClick={() => table.previousPage()}
 						disabled={!table.getCanPreviousPage()}
+						data-testid="previous-page"
 					>
 						<ChevronLeft className="h-4 w-4" />
+						<span className="sr-only">Previous page</span>
 					</Button>
 					<Button
 						variant="outline"
 						size="sm"
 						onClick={() => table.nextPage()}
 						disabled={!table.getCanNextPage()}
+						data-testid="next-page"
 					>
 						<ChevronRight className="h-4 w-4" />
+						<span className="sr-only">Next page</span>
 					</Button>
 				</div>
 			</div>

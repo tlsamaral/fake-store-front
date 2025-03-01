@@ -14,6 +14,7 @@ import {
 	TableHeader,
 	TableRow,
 } from '@/components/ui/table'
+import { currencyFormatter } from '@/utils/currency-formatter'
 import { useQuery } from '@tanstack/react-query'
 import type { Product } from '../page'
 
@@ -50,7 +51,9 @@ export function ProductDetails({ product }: ProductDetailsProps) {
 					</TableRow>
 					<TableRow>
 						<TableCell className="text-muted-foreground">Preço</TableCell>
-						<TableCell className="flex justify-end">{product.price}</TableCell>
+						<TableCell className="flex justify-end">
+							{currencyFormatter.format(product.price)}
+						</TableCell>
 					</TableRow>
 					<TableRow>
 						<TableCell className="text-muted-foreground">Avaliação</TableCell>
