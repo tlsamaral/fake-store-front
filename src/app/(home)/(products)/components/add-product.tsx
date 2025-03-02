@@ -20,10 +20,11 @@ import {
 import { Textarea } from '@/components/ui/textarea'
 import { currencyFormatter } from '@/utils/currency-formatter'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { useMutation, useQuery } from '@tanstack/react-query'
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { Controller, useForm } from 'react-hook-form'
 import { toast } from 'sonner'
 import { z } from 'zod'
+import type { Product } from '../page'
 import { AddProductSkeleton } from './add-product-skeleton'
 
 const createProductSchema = z.object({
@@ -41,6 +42,8 @@ const createProductSchema = z.object({
 type CreateProductData = z.infer<typeof createProductSchema>
 
 export function AddProduct() {
+	const queryClient = useQueryClient()
+
 	const { data: categories, isLoading: categoriesLoading } = useQuery({
 		queryKey: ['categories'],
 		queryFn: fetchCategories,
@@ -69,10 +72,16 @@ export function AddProduct() {
 
 	async function submitCreateProduct(data: CreateProductData) {
 		try {
+			// Aqui eu optei por fazer essa transformação manual pois o react hook form está com bug de tipagem quando de usa o input/output do zod. Então para não ficar com erro irei fazer de forma manual :)
+
+			const numericPrice = Number(
+				data.price.replace(/[^\d,]/g, '').replace(',', '.'),
+			)
+
 			await updateProductFn({
 				title: data.title,
 				description: data.description,
-				price: Number(data.price),
+				price: numericPrice,
 				category: data.category,
 			})
 
@@ -105,6 +114,7 @@ export function AddProduct() {
 						<Input
 							id="title"
 							placeholder="Product title"
+							maxLength={30}
 							{...register('title')}
 						/>
 						<div className="flex justify-between gap-2 items-center">
