@@ -1,4 +1,5 @@
 import { api } from '@/lib/axios'
+import type { Product } from './get-product'
 
 interface ProductEdit {
 	id: number
@@ -12,7 +13,7 @@ export async function updateProduct({
 	price,
 	description,
 }: ProductEdit) {
-	const response = await api.put(`/products/${id}`, {
+	const response = await api.put<Product>(`/products/${id}`, {
 		title,
 		price,
 		description,

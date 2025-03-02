@@ -1,4 +1,5 @@
 import { api } from '@/lib/axios'
+import type { Product } from './get-product'
 
 interface ProductRegister {
 	title: string
@@ -12,7 +13,7 @@ export async function createProduct({
 	description,
 	category,
 }: ProductRegister) {
-	const response = await api.post('/products', {
+	const response = await api.post<Product>('/products', {
 		title,
 		price,
 		description,
