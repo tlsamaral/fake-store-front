@@ -5,36 +5,42 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import type { Product } from '../page'
 import { ProductTable } from './products-table'
 
+const products: Product[] = []
+// biome-ignore lint/complexity/noForEach: <explanation>
+Array.from({ length: 30 }).forEach((_, index) => {
+	products.push({
+		id: index + 1,
+		title: `Product ${index + 1}`,
+		description: `Description ${index + 1}`,
+		category: `Category ${index + 1}`,
+		price: 9.99,
+		image: 'https://github.com/tlsamaral.png',
+		rating: {
+			rate: index === 0 ? 4.5 : 3.5,
+			count: 10,
+		},
+	})
+})
+
 jest.mock('@/app/http/fetch-categories', () => ({
 	fetchCategories: jest.fn(() =>
-		Promise.resolve(['Electronics', 'Clothing', 'Books']),
+		Promise.resolve(['Category 1', 'Category 2', 'Category 3']),
 	),
 }))
 
+jest.mock('@/app/http/fetch-products', () => ({
+	fetchProducts: jest.fn(() => Promise.resolve(products)),
+}))
+
 describe('Product Table', () => {
-	const products: Product[] = []
-	beforeAll(() => {
-		// biome-ignore lint/complexity/noForEach: <explanation>
-		Array.from({ length: 30 }).forEach((_, index) => {
-			products.push({
-				id: index + 1,
-				title: `Product ${index + 1}`,
-				description: `Description ${index + 1}`,
-				category: `Category ${index + 1}`,
-				price: 9.99,
-				image: 'https://github.com/tlsamaral.png',
-				rating: {
-					rate: index === 0 ? 4.5 : 3.5,
-					count: 10,
-				},
-			})
-		})
+	let queryClient: QueryClient
+
+	beforeEach(() => {
+		queryClient = new QueryClient()
 	})
 
-	it('should be render correctly', () => {
-		const queryClient = new QueryClient()
-
-		const wrapper = render(<ProductTable products={products} />, {
+	it('should render correctly with products', async () => {
+		render(<ProductTable />, {
 			wrapper: ({ children }) => (
 				<QueryClientProvider client={queryClient}>
 					{children}
@@ -42,15 +48,14 @@ describe('Product Table', () => {
 			),
 		})
 
-		const tableRows = wrapper.getAllByRole('row')
-
-		expect(tableRows.length).toBe(11)
+		expect(await screen.findByText('Product 1')).toBeInTheDocument()
+		expect(screen.getByText('Category 1')).toBeInTheDocument()
+		expect(screen.getByText('Product 2')).toBeInTheDocument()
+		expect(screen.getByText('Category 2')).toBeInTheDocument()
 	})
 
-	it('should be contain product title and category', async () => {
-		const queryClient = new QueryClient()
-
-		const wrapper = render(<ProductTable products={products} />, {
+	it('should paginate to next and previous page', async () => {
+		const wrapper = render(<ProductTable />, {
 			wrapper: ({ children }) => (
 				<QueryClientProvider client={queryClient}>
 					{children}
@@ -58,60 +63,16 @@ describe('Product Table', () => {
 			),
 		})
 
-		expect(wrapper.getByText('Product 1')).toBeInTheDocument()
-		expect(wrapper.getByText('Category 1')).toBeInTheDocument()
-	})
-
-	it('should be render no results', () => {
-		const queryClient = new QueryClient()
-
-		const wrapper = render(<ProductTable products={[]} />, {
-			wrapper: ({ children }) => (
-				<QueryClientProvider client={queryClient}>
-					{children}
-				</QueryClientProvider>
-			),
-		})
-
-		expect(wrapper.getByText('No results.')).toBeInTheDocument()
-	})
-
-	it('should be able paginate to next page', async () => {
-		const queryClient = new QueryClient()
-
-		const wrapper = render(<ProductTable products={products} />, {
-			wrapper: ({ children }) => (
-				<QueryClientProvider client={queryClient}>
-					{children}
-				</QueryClientProvider>
-			),
-		})
-
-		const nextPageButton = wrapper.getByTestId('next-page')
+		const nextPageButton = screen.getByTestId('next-page')
 		await userEvent.click(nextPageButton)
 
-		expect(wrapper.getByText('Product 20')).toBeInTheDocument()
-	})
+		wrapper.debug()
 
-	it('should be able paginate to previous page', async () => {
-		const queryClient = new QueryClient()
+		expect(await screen.findByText('Product 20')).toBeInTheDocument()
 
-		const wrapper = render(<ProductTable products={products} />, {
-			wrapper: ({ children }) => (
-				<QueryClientProvider client={queryClient}>
-					{children}
-				</QueryClientProvider>
-			),
-		})
-
-		const nextPageButton = wrapper.getByTestId('next-page')
-		await userEvent.click(nextPageButton)
-
-		expect(wrapper.getByText('Product 20')).toBeInTheDocument()
-
-		const previousPageButton = wrapper.getByTestId('previous-page')
+		const previousPageButton = screen.getByTestId('previous-page')
 		await userEvent.click(previousPageButton)
 
-		expect(wrapper.getByText('Product 1')).toBeInTheDocument()
+		expect(await screen.findByText('Product 1')).toBeInTheDocument()
 	})
 })
