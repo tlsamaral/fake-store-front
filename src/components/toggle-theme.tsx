@@ -32,16 +32,16 @@ export function ToggleTheme() {
 			</DropdownMenuTrigger>
 			<DropdownMenuContent align="end">
 				<DropdownMenuItem onClick={() => setTheme('light')} data-testid="light">
-					Claro
+					Light
 				</DropdownMenuItem>
 				<DropdownMenuItem onClick={() => setTheme('dark')} data-testid="dark">
-					Escuro
+					Dark
 				</DropdownMenuItem>
 				<DropdownMenuItem
 					onClick={() => setTheme('system')}
 					data-testid="system"
 				>
-					Sistema
+					System
 				</DropdownMenuItem>
 			</DropdownMenuContent>
 		</DropdownMenu>
