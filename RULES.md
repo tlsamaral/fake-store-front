@@ -33,9 +33,9 @@ Critérios de Avaliação
 - [x] Funcionalidade - O sistema deve atender a todos os requisitos funcionais e não funcionais descritos.
 - [x] Código - O código deve ser limpo, bem estruturado e seguir os princípios SOLID.
 - [x] Deve incluir comentários explicativos quando necessário.
-- [ ] Documentação - O repositório no GitHub deve conter um README.md explicando como rodar a aplicação, incluindo comandos para
+- [x] Documentação - O repositório no GitHub deve conter um README.md explicando como rodar a aplicação, incluindo comandos para
 setup e execução.
-- [ ] Um projeto/Print básico do Figma deve ser enviado dentro repositório.
+- [x] Um projeto/Print básico do Figma deve ser enviado dentro repositório.
 - [x] Boas Práticas
 - [x] Utilização de boas práticas de versionamento com commits claros e frequentes.
 - [x] Implementação de testes unitários para garantir a funcionalidade do código.
@@ -43,9 +43,9 @@ setup e execução.
 Passos para Submissão
 - [x] Crie um repositório no GitHub.
 - [x] Desenvolva a aplicação conforme os requisitos.
-- [ ] Inclua um README.md com instruções claras para setup e execução da aplicação.
-- [ ] Documentar o projeto.
-- [ ] Envie o link do repositório para avaliação.
+- [x] Inclua um README.md com instruções claras para setup e execução da aplicação.
+- [x] Documentar o projeto.
+- [x] Envie o link do repositório para avaliação.
 
 Dicas (Não obrigatório)
 - [x] Utilizar o conceito de FDD;
