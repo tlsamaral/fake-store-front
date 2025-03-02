@@ -38,7 +38,7 @@ setup e execução.
 - [ ] Um projeto/Print básico do Figma deve ser enviado dentro repositório.
 - [x] Boas Práticas
 - [x] Utilização de boas práticas de versionamento com commits claros e frequentes.
-- [ ] Implementação de testes unitários para garantir a funcionalidade do código.
+- [x] Implementação de testes unitários para garantir a funcionalidade do código.
 
 Passos para Submissão
 - [x] Crie um repositório no GitHub.
@@ -50,4 +50,4 @@ Passos para Submissão
 Dicas (Não obrigatório)
 - [x] Utilizar o conceito de FDD;
 - [x] Utilizar o Shadcn;
-- [ ] Documente pelo menos um componente com o StoryBook;
+- [x] Documente pelo menos um componente com o StoryBook;
