@@ -57,7 +57,7 @@ The project uses environment variables to connect to the API and other services.
 📌 Create a `.env.local` file in the project root and add the following variables:
 
 ```bash
-NEXT_PUBLIC_API_URL=https://example-api.com  
+NEXT_PUBLIC_API_URL=https://fakestoreapi.com  
 NEXT_PUBLIC_ENABLED_API_DELAY=true
 ```
 📌 **Important:** If you keep `NEXT_PUBLIC_ENABLED_API_DELAY=true`, the API responses will be delayed, providing a more immersive **UI & UX** experience.
