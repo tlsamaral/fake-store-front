@@ -30,17 +30,10 @@ import { Button } from '@/components/ui/button'
 
 import { deleteProduct } from '@/app/http/delete-product'
 import { fetchCategories } from '@/app/http/fetch-categories'
+import { fetchProducts } from '@/app/http/fetch-products'
 import { AlertDialog, AlertDialogTrigger } from '@/components/ui/alert-dialog'
 import { Dialog, DialogTrigger } from '@/components/ui/dialog'
-import {
-	DropdownMenu,
-	DropdownMenuCheckboxItem,
-	DropdownMenuContent,
-	DropdownMenuItem,
-	DropdownMenuLabel,
-	DropdownMenuSeparator,
-	DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu'
+
 import { Input } from '@/components/ui/input'
 import { Progress } from '@/components/ui/progress'
 import {
@@ -59,6 +52,7 @@ import {
 	TableHeader,
 	TableRow,
 } from '@/components/ui/table'
+import { currencyFormatter } from '@/utils/currency-formatter'
 import { useMutation, useQuery } from '@tanstack/react-query'
 import Image from 'next/image'
 import { toast } from 'sonner'
@@ -67,6 +61,7 @@ import { AddProduct } from './add-product'
 import { DeleteProductConfirm } from './delete-product-confirm'
 import { EditProduct } from './edit-product'
 import { ProductDetails } from './product-details'
+import { ProductTableSkeleton } from './product-table-skeleton'
 
 export const columns: ColumnDef<Product>[] = [
 	{
@@ -104,6 +99,7 @@ export const columns: ColumnDef<Product>[] = [
 					width={60}
 					height={60}
 					className="object-cover w-14 h-14 rounded-lg"
+					priority
 				/>
 			</div>
 		),
@@ -156,7 +152,9 @@ export const columns: ColumnDef<Product>[] = [
 			)
 		},
 		cell: ({ row }) => {
-			return <p className="font-medium text-center">{row.getValue('price')}</p>
+			const { price } = row.original
+			const formattedPrice = currencyFormatter.format(price)
+			return <p className="font-medium text-center">{formattedPrice}</p>
 		},
 	},
 	{
@@ -191,7 +189,7 @@ export const columns: ColumnDef<Product>[] = [
 					<DialogTrigger asChild>
 						<Button size="sm" variant="outline">
 							<Pencil className="size-4" />
-							Editar
+							Edit
 						</Button>
 					</DialogTrigger>
 					<EditProduct productId={row.original.id} open={editDialogOpen} />
@@ -226,12 +224,12 @@ export const columns: ColumnDef<Product>[] = [
 					<AlertDialogTrigger asChild>
 						<Button size="sm" variant="destructive">
 							<Trash className="size-4" />
-							Excluir
+							Delete
 						</Button>
 					</AlertDialogTrigger>
 					<DeleteProductConfirm
-						title="Você tem certeza?"
-						description={`Você quer excluir o produto ${product.title}, com id ${product.id}?`}
+						title="Delete Product?"
+						description={`Are you sure you want to delete ${product.title}, with id ${product.id}?`}
 						onConfirm={handleDelete}
 					/>
 				</AlertDialog>
@@ -240,11 +238,11 @@ export const columns: ColumnDef<Product>[] = [
 	},
 ]
 
-interface DataTableProps {
-	products: Product[]
-}
+// interface DataTableProps {
+// 	products: Product[]
+// }
 
-export function ProductTable({ products: data }: DataTableProps) {
+export function ProductTable() {
 	const [sorting, setSorting] = React.useState<SortingState>([])
 	const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
 		[],
@@ -254,8 +252,21 @@ export function ProductTable({ products: data }: DataTableProps) {
 	const [rowSelection, setRowSelection] = React.useState({})
 	const [categoryFilter, setCategoryFilter] = React.useState('')
 
+	const { data: products, isLoading: productsLoading } = useQuery({
+		queryKey: ['products'],
+		queryFn: fetchProducts,
+	})
+
+	const sortedProducts =
+		products?.sort((a: Product, b: Product) => {
+			if (b.rating.rate >= 4.5 && a.rating.rate < 4.5) return 1
+			if (a.rating.rate >= 4.5 && b.rating.rate < 4.5) return -1
+
+			return b.rating.rate - a.rating.rate
+		}) ?? []
+
 	const table = useReactTable({
-		data,
+		data: sortedProducts,
 		columns,
 		onSortingChange: setSorting,
 		onColumnFiltersChange: setColumnFilters,
@@ -359,7 +370,9 @@ export function ProductTable({ products: data }: DataTableProps) {
 						))}
 					</TableHeader>
 					<TableBody>
-						{table.getRowModel().rows?.length ? (
+						{productsLoading ? (
+							<ProductTableSkeleton />
+						) : table.getRowModel().rows?.length ? (
 							table.getRowModel().rows.map((row) => (
 								<TableRow
 									key={row.id}
@@ -389,10 +402,6 @@ export function ProductTable({ products: data }: DataTableProps) {
 				</Table>
 			</div>
 			<div className="flex items-center justify-end space-x-2 py-4">
-				<div className="flex-1 text-sm text-muted-foreground">
-					{table.getFilteredSelectedRowModel().rows.length} of{' '}
-					{table.getFilteredRowModel().rows.length} row(s) selected.
-				</div>
 				<div className="space-x-2">
 					<Button
 						variant="outline"
