@@ -7,6 +7,7 @@ import type { Meta, StoryObj } from '@storybook/react'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { Edit } from 'lucide-react'
 import { http, HttpResponse } from 'msw'
+import { mswDecorator } from 'msw-storybook-addon'
 import React from 'react'
 
 const queryClient = new QueryClient()
@@ -21,23 +22,27 @@ const meta: Meta<typeof EditProduct> = {
 	parameters: {
 		msw: {
 			handlers: [
-				http.put<never, never, Product>('/products/:id', () => {
-					return HttpResponse.json(
-						{
-							id: 1,
-							title: 'Test Product',
-							description: 'Test Description',
-							category: 'Test Category',
-							price: 9.99,
-							image: 'https://github.com/tlsamaral.png',
-							rating: {
-								rate: 4.5,
-								count: 10,
+				http.put<{ id: string }, never, Product>(
+					'/products/:id',
+					({ params }) => {
+						const { id } = params
+						return HttpResponse.json(
+							{
+								id: Number(id),
+								title: 'Test Product',
+								description: 'Test Description',
+								category: 'Test Category',
+								price: 9.99,
+								image: 'https://github.com/tlsamaral.png',
+								rating: {
+									rate: 4.5,
+									count: 10,
+								},
 							},
-						},
-						{ status: 200 },
-					)
-				}),
+							{ status: 200 },
+						)
+					},
+				),
 			],
 		},
 	},

@@ -5,6 +5,7 @@ import { Dialog } from '@/components/ui/dialog'
 import type { Meta, StoryObj } from '@storybook/react'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { http, HttpResponse } from 'msw'
+import { mswDecorator } from 'msw-storybook-addon'
 import React from 'react'
 
 const queryClient = new QueryClient()
@@ -28,6 +29,18 @@ for (let i = 0; i < 30; i++) {
 const meta: Meta<typeof ProductTable> = {
 	title: 'Tables/ProductsTable',
 	component: ProductTable,
+	parameters: {
+		msw: {
+			handlers: [
+				http.get<never, never, string[]>('/products/categories', () => {
+					return HttpResponse.json(
+						['Category 1', 'Category 2', 'Category 3', 'Category 4'],
+						{ status: 200 },
+					)
+				}),
+			],
+		},
+	},
 	args: {
 		products,
 	},

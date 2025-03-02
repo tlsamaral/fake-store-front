@@ -14,12 +14,15 @@ const meta: Meta<typeof AddProduct> = {
 	parameters: {
 		msw: {
 			handlers: [
-				http.get<never, never, string[]>('/api/categories', () => {
-					return HttpResponse.json(
-						['Electronics', 'Clothing', 'Home & Kitchen', 'Toys'],
-						{ status: 200 },
-					)
-				}),
+				http.get<never, never, string[]>(
+					'https://fakestoreapi.com/products/categories',
+					() => {
+						return HttpResponse.json(
+							['Category 1', 'Category 2', 'Category 3', 'Category 4'],
+							{ status: 200 },
+						)
+					},
+				),
 			],
 		},
 	},
