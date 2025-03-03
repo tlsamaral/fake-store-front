@@ -6,18 +6,21 @@ interface ProductRegister {
 	price: number
 	description: string
 	category: string
+	image: string | null
 }
 export async function createProduct({
 	title,
 	price,
 	description,
 	category,
+	image,
 }: ProductRegister) {
 	const response = await api.post<Product>('/products', {
 		title,
 		price,
 		description,
 		category,
+		image,
 	})
 	return response.data
 }
