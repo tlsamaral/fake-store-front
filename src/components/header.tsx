@@ -10,7 +10,7 @@ export function Header() {
 				<Store className="h-6 w-6" />
 				<Separator orientation="vertical" className="h-6" />
 				<nav className="flex items-center space-x-4 lg:space-x-6">
-					<NavLink href="/">Início</NavLink>
+					<NavLink href="/">Products</NavLink>
 				</nav>
 
 				<div className="ml-auto">
