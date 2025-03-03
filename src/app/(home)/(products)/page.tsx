@@ -1,4 +1,3 @@
-import { NextSeo } from 'next-seo'
 import { ProductTable } from './components/products-table'
 
 export interface Product {
