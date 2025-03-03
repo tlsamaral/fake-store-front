@@ -1,5 +1,6 @@
 import { createProduct } from '@/app/http/create-product'
 import { fetchCategories } from '@/app/http/fetch-categories'
+import { ImageUploader } from '@/components/image-uploader'
 import { Button } from '@/components/ui/button'
 import {
 	DialogContent,
@@ -21,6 +22,9 @@ import { Textarea } from '@/components/ui/textarea'
 import { currencyFormatter } from '@/utils/currency-formatter'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
+import { Package, Trash, Upload } from 'lucide-react'
+import Image from 'next/image'
+import { useState } from 'react'
 import { Controller, useForm } from 'react-hook-form'
 import { toast } from 'sonner'
 import { z } from 'zod'
@@ -37,6 +41,7 @@ const createProductSchema = z.object({
 		.min(3, 'Description must be at least 3 characters long'),
 	price: z.string().min(1, 'Price must be at least 1 characters long'),
 	category: z.string().min(1, 'Category must be at least 1 characters long'),
+	image: z.string().url().nullable(),
 })
 
 type CreateProductData = z.infer<typeof createProductSchema>
@@ -62,10 +67,11 @@ export function AddProduct() {
 			description: '',
 			price: currencyFormatter.format(0),
 			category: '',
+			image: null,
 		},
 	})
 
-	const { mutateAsync: updateProductFn, isPending } = useMutation({
+	const { mutateAsync: createProductFn, isPending } = useMutation({
 		mutationKey: ['create-product'],
 		mutationFn: createProduct,
 	})
@@ -78,11 +84,12 @@ export function AddProduct() {
 				data.price.replace(/[^\d,]/g, '').replace(',', '.'),
 			)
 
-			await updateProductFn({
+			await createProductFn({
 				title: data.title,
 				description: data.description,
 				price: numericPrice,
 				category: data.category,
+				image: data.image,
 			})
 
 			toast.success('Product inserted successfully!')
@@ -109,6 +116,21 @@ export function AddProduct() {
 					className="grid gap-2 mt-2 py-4"
 					onSubmit={handleSubmit(submitCreateProduct)}
 				>
+					<div className="h-40 w-full">
+						<Controller
+							name="image"
+							control={control}
+							render={({ field }) => {
+								return (
+									<ImageUploader
+										onImageChange={(image) => {
+											field.onChange(image)
+										}}
+									/>
+								)
+							}}
+						/>
+					</div>
 					<div className="grid items-center gap-2 mt-2">
 						<Label htmlFor="title">Title</Label>
 						<Input
