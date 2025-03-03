@@ -1,5 +1,4 @@
-import { fetchProducts } from '@/app/http/fetch-products'
-import { useQuery } from '@tanstack/react-query'
+import { NextSeo } from 'next-seo'
 import { ProductTable } from './components/products-table'
 
 export interface Product {
@@ -13,6 +12,14 @@ export interface Product {
 		rate: number
 		count: number
 	}
+}
+
+import type { Metadata } from 'next'
+
+export const metadata: Metadata = {
+	title: 'Fake Store | Products',
+	description:
+		'Fake Store Front Panel, developed with Next.js by Talles Amaral',
 }
 
 // Como é um teste, eu quis ter uma UI&UX um pouco mais interessante, então optei por fazer a busca de produtos com o React query e não usar o SSR do Next.js.
